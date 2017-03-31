@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="SlideNote"></dbname>
+    <version value="2"></version>
+    <list>
+        <mapping class="com.slidenote.www.slidenotev2.Model.ImageFolder"></mapping>
+        <mapping class="com.slidenote.www.slidenotev2.Model.Image"></mapping>
+        <mapping class="com.slidenote.www.slidenotev2.Model.NoteFolder"></mapping>
+        <mapping class="com.slidenote.www.slidenotev2.Model.Note"></mapping>
+    </list>
+</litepal>
