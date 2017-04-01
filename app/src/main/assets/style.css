@@ -1,0 +1,146 @@
+/**
+ * Copyright (C) 2015 Wasabeef
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@charset "UTF-8";
+
+html{
+    height: 100%;
+    font-size: 12px;
+}
+*{
+    /*box-sizing: border-box;*/
+    /*-webkit-user-select: none;!*禁用手机浏览器的用户选择功能 *!*/
+    /*-moz-user-select: none;*/
+    /*-webkit-touch-callout:none;*/
+    /*-khtml-user-select:none;*/
+    /*-ms-user-select:none;*/
+    /*user-select:none;*/
+    /*-o-user-select:none;*/
+}
+body{
+    width: 100%;
+    min-height:100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    display: table;
+    table-layout: fixed;
+    position: relative;
+    /*border: 5px dashed #F00;*/
+    /*padding: 1.6rem;*/
+    /*border: 2px dashed #F00;*/
+}
+#caption{
+    display: table-caption;
+}
+#editor{
+    /*border: 2px dashed #F0F;*/
+    display: table-cell;
+    -webkit-user-select: auto !important;
+    -webkit-user-modify: read-write !important;
+
+    outline: 0 solid transparent;
+    background: no-repeat center;
+    background-size: cover;
+    line-height: 1.5em;
+    font-size: 1.4rem;
+    padding: 1rem;
+}
+
+#editor[placeholder]:empty:not(:focus):before {
+    content: attr(placeholder);
+    opacity: .5;
+}
+#editor img{
+    /*border: 2px dashed #0FF;*/
+    width:100%;
+    height:auto;
+    display: block;
+    margin: 1rem 0;
+}
+#caption #title{
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #030303;
+    margin: 1rem;
+}
+#caption #createDate, #editor{
+    font-size: 1.4rem;
+    color: #030303;
+}
+#caption #createDate{
+    border-bottom: 0.2rem solid #FEE456;
+    margin:0 1rem;
+    display:inline-block;
+    padding-bottom:0.5rem;
+}
+
+#ImageIdentifyBox{
+    position:absolute;
+    z-index:10;
+    display:none;
+}
+#Smectite{
+    filter:alpha(opacity=0);
+    -moz-opacity:0;
+    -khtml-opacity: 0.61;
+    opacity: 0.9;
+    position:fixed;
+}
+#BoxNotification{
+    font-size:1.6rem;
+    width:7.6rem;
+    height:7.6rem;
+    border-radius:1.5rem;
+    background-color:#C4C0C0;
+    color:#030303;
+    position:absolute;
+}
+.sp1,.sp2
+{
+    display:block;
+    height:0;
+    width:0;
+    position:absolute;
+    font-size:0;
+    line-height:0;
+}
+.sp1
+{
+    left:-0.6rem;    /* 它的绝对值加上pxan的边框宽度等于div边框宽度的5倍 */
+    top:0.8rem;   /* 它来确定尖角的位置 */
+    border-left:0;
+    border-top:0.2rem solid rgba(255,255,255,0);  /* 注意颜色的变化 */
+    border-right:0.8rem solid #C4C0C0;
+    border-bottom:0.1rem solid rgba(255,255,255,0);
+}
+
+#Delete,#Identify{
+    width:7.6rem;
+    line-height:3.8rem;
+    text-align: center;
+}
+#Identify{
+    height:3.8rem;
+    border-bottom:0.1rem solid #FFF ;
+}
+#Identify img, #Delete img{
+    width:1.2rem;
+    height:1.2rem;
+    display:inline-block;
+}
+#Delete{
+    height:3.8rem;
+}

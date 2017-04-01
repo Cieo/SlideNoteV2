@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml ">
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="normalize.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="ImageIdentifyBox" contentEditable="false">
+    <div id="Smectite"></div>
+    <div id="BoxNotification" >
+        <div id="Identify" ><img src="Img/btn_Identity_h_mdpi.png"/>识别</div>
+        <div id="Delete"><img src="Img/btn_delete_h_mdpi.png"/>删除</div>
+            <span class="sp1">
+                <span class="sp2"></span>
+            </span>
+    </div>
+</div>
+
+<div id="caption">
+    <p id="title" contenteditable="true">
+        这是标题
+    </p>
+    <p id="createDate" contenteditable="false">
+        这是时间
+    </p>
+    <!--<button id="button1" onclick="ininin()">插入图片</button>-->
+</div>
+<div id="editor" contenteditable="true">
+    新的MacBook采用视网膜显示屏，其devicePixelRatio是（如果不出意外）2. 视网膜MacBook的物理像素是2800×1800，而显示出分辨率为1400×900，如果把分辨率作为dips层，则devicePixelRatio为2应该是无误的。
+
+    需要指出的是，如果你把分辨率改成1920×1200，devicePixelRatio依然是2. 严格来讲，这是不准确的，应该是1.5, 然而你也可以说MacBook的分辨率不同于dips层，这种情况下devicePixelRatio在台式机/笔记本下的定义就不一样（哪一个？不知道。）。
+
+    在任何情况下，根据苹果的规范做法，devicePixelRatio值只可能是1或者2. 如果你看到2，你要提供视网膜优化显示图片，如果是1，使用正常的图片——（这里内容其实属于视网膜站点的开发内容）。
+</div>
+
+<script type="text/javascript" src="jquery.1.10.2.js"></script>
+<script type="text/javascript" src="rich_editor.js"></script>
+</body>
+</html>
+

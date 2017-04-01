@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:background="#FEE244"
+        android:id="@+id/RichEditorTitle">
+        <ImageButton
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/btn_return_n_xxhdpi"
+            android:scaleType="fitXY"
+            android:background="@null"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="16dp"
+            android:id="@+id/ReturnButton" />
+        <ImageButton
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/btn_pdf_n_xxhdpi"
+            android:scaleType="fitXY"
+            android:background="@null"
+            android:layout_toLeftOf="@id/ShareButton"
+            android:layout_marginRight="16dp"
+            android:id="@+id/PDFButton"/>
+        <ImageButton
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/btn_share_n_xxhdpi"
+            android:scaleType="fitXY"
+            android:background="@null"
+            android:layout_alignParentRight="true"
+            android:id="@+id/ShareButton"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:background="@android:color/black">
+        <com.joanzapata.pdfview.PDFView
+            android:id="@+id/pdfVIew"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+    </LinearLayout>
+
+</LinearLayout>

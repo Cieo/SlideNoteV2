@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.slidenote.www.slidenotev2.Model.Note;
 import com.slidenote.www.slidenotev2.Model.NoteFolder;
+import com.slidenote.www.slidenotev2.NoteRichEditor;
 import com.slidenote.www.slidenotev2.Presenter.NoteListPresenter;
 import com.slidenote.www.slidenotev2.R;
 import com.slidenote.www.slidenotev2.View.Adapter.NoteContentAdapter;
@@ -229,7 +230,7 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
 
     @Override
     public void toDetailActivity(String folderName, int position) {
-
+        NoteRichEditor.startAction(this,folderName,position);
     }
 
     @Override

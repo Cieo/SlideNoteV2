@@ -22,6 +22,8 @@
         <activity android:name=".View.ImageDetailView" />
         <activity android:name=".View.NoteListView"/>
         <activity android:name=".View.NoteMoveToView"/>
+        <activity android:name=".NoteRichEditor"/>
+        <activity android:name=".PdfViewer"/>
     </application>
 
 </manifest>
