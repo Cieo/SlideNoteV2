@@ -20,6 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.slidenote.www.slidenotev2.Model.Note;
+import com.slidenote.www.slidenotev2.Model.NoteFolder;
+import com.slidenote.www.slidenotev2.Utils.Util;
+import com.slidenote.www.slidenotev2.View.ImageListView;
+
+import org.litepal.crud.DataSupport;
+
 import DrawableImageView.DrawOperation;
 import DrawableImageView.DrawableImageView;
 import RichEditorPac.RichEditor;
@@ -29,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class NoteRichEditor extends AppCompatActivity implements View.OnTouchListener{
     private static final int REQUEST_CODE_PICK_IMAGE = 1023;
@@ -66,12 +74,53 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
 
     public WebViewScreenshot webViewScreenshot;
 
+    /************************新增*****************************************/
+
+    private Note note;
+    private NoteFolder folder;
+    private boolean isChanged;
+
     public static void startAction(AppCompatActivity activity,String currentFolder, int position){
         Intent intent = new Intent(activity,NoteRichEditor.class);
         intent.putExtra("currentFolder",currentFolder);
         intent.putExtra("position",position);
         activity.startActivityForResult(intent,10001);
     }
+
+
+    private void onActivityStart(){
+        isChanged = false;
+        Intent intent = getIntent();
+        String currentFolder = intent.getStringExtra("currentFolder");
+        int position = intent.getIntExtra("position",-1);
+        if (position == -1){
+            return;
+        }
+        if (currentFolder.equals(ImageListView.ALL)){
+            note = DataSupport.findAll(Note.class,true).get(position);
+        }else {
+            List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class,true);
+            folder = Util.findNoteFolder(folders,currentFolder);
+            if (folder != null){
+                note = folder.getNotes().get(position);
+            }
+        }
+    }
+
+    private void onActivityFinish(){
+        note.setTitle("your title");
+        note.setContent("your content");
+        note.setDate("your date");
+        note.setFolder(folder);
+        note.save();
+        if (isChanged){
+            setResult(RESULT_OK);
+        }else {
+            setResult(RESULT_CANCELED);
+        }
+    }
+
+    /*****************************************************************/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

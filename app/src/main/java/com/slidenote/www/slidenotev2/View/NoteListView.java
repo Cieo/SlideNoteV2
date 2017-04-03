@@ -319,6 +319,11 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
                     presenter.refreshContent();
                 }
                 break;
+            case 10001:
+                if (requestCode == RESULT_OK){
+                    presenter.refreshDrawer();
+                    presenter.refreshContent();
+                }
         }
     }
 }

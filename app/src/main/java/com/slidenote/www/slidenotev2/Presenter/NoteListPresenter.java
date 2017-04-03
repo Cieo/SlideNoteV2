@@ -56,9 +56,9 @@ public class NoteListPresenter {
             iNoteListView.showHideSingleCheckSign(position);
             if (position != 0){
                 if (selected.contains(position-1)){
-                    selected.remove(Integer.valueOf(position-1));
-                }else {
-                    selected.add(position-1);
+                        selected.remove(Integer.valueOf(position-1));
+                    }else {
+                        selected.add(position-1);
                 }
             }
         }else {
@@ -276,9 +276,6 @@ public class NoteListPresenter {
         iNoteListView.toImageListActivity();
     }
 
-    public void toDetailActivity(String folderName, int position) {
-        iNoteListView.toDetailActivity(folderName,position);
-    }
 
     public void fromDetailActivity() {
 

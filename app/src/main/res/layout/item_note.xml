@@ -5,27 +5,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="title" />
-
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="date" />
-
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="content" />
-
+    <NoteItemView.NoteItemVIew
+        android:id="@+id/note"
+        android:layout_width="@dimen/x40"
+        android:layout_height="@dimen/y80">
+    </NoteItemView.NoteItemVIew>
     <ImageView
-        android:src="@mipmap/ic_launcher_round"
+        android:visibility="gone"
         android:id="@+id/checkSign"
+        android:src="@mipmap/ic_launcher_round"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>

@@ -22,7 +22,7 @@ public class BaseListener {
     public interface OnStoreNewImageListener {
         void storeNewImageSuccess(List<ImageFolder> folders);
 
-        void storeNewImagefail();
+        void storeNewImageFail();
     }
 
     public interface OnMoveImageListener {

@@ -15,6 +15,8 @@ import com.slidenote.www.slidenotev2.SlideNoteApplication;
 import java.util.ArrayList;
 import java.util.List;
 
+import NoteItemView.NoteItemVIew;
+
 /**
  * Created by Cieo233 on 3/28/2017.
  */
@@ -88,16 +90,38 @@ public class NoteContentAdapter extends RecyclerView.Adapter {
         }
     }
 
+//    @Override
+//    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+//        NoteItemHolder itemHolder = (NoteItemHolder) holder;
+//        if (position != 0){
+//            final Note note = notes.get(position-1);
+//            itemHolder.date.setText(note.getDate());
+//            itemHolder.title.setText(note.getTitle());
+//            if (note.getContent() != null){
+//                itemHolder.content.setText(note.getContent());
+//            }
+//            itemHolder.item.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    onNoteClickListener.noteClick(note, position);
+//                }
+//            });
+//        } else {
+//            itemHolder.item.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    onNoteClickListener.noteClick(null, position);
+//                }
+//            });
+//        }
+//    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         NoteItemHolder itemHolder = (NoteItemHolder) holder;
         if (position != 0){
             final Note note = notes.get(position-1);
-            itemHolder.date.setText(note.getDate());
-            itemHolder.title.setText(note.getTitle());
-            if (note.getContent() != null){
-                itemHolder.content.setText(note.getContent());
-            }
+            itemHolder.note.setNote(note);
             itemHolder.item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -119,19 +143,32 @@ public class NoteContentAdapter extends RecyclerView.Adapter {
         return notes.size()+1;
     }
 
+//    public class NoteItemHolder extends RecyclerView.ViewHolder {
+//
+//        private LinearLayout item;
+//        private TextView title, date, content;
+//        private ImageView checkSign;
+//
+//        public NoteItemHolder(View view) {
+//            super(view);
+//            checkSign = (ImageView) view.findViewById(R.id.checkSign);
+//            item = (LinearLayout) view.findViewById(R.id.item);
+//            title = (TextView) view.findViewById(R.id.title);
+//            date = (TextView) view.findViewById(R.id.date);
+//            content = (TextView) view.findViewById(R.id.content);
+//        }
+//    }
     public class NoteItemHolder extends RecyclerView.ViewHolder {
 
         private LinearLayout item;
-        private TextView title, date, content;
+        private NoteItemVIew note;
         private ImageView checkSign;
 
         public NoteItemHolder(View view) {
             super(view);
             checkSign = (ImageView) view.findViewById(R.id.checkSign);
             item = (LinearLayout) view.findViewById(R.id.item);
-            title = (TextView) view.findViewById(R.id.title);
-            date = (TextView) view.findViewById(R.id.date);
-            content = (TextView) view.findViewById(R.id.content);
+            note = (NoteItemVIew) view.findViewById(R.id.note);
         }
     }
 }

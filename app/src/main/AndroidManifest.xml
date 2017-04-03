@@ -24,6 +24,7 @@
         <activity android:name=".View.NoteMoveToView"/>
         <activity android:name=".NoteRichEditor"/>
         <activity android:name=".PdfViewer"/>
+        <activity android:name=".View.ImagePreviewView"/>
     </application>
 
 </manifest>
