@@ -16,7 +16,7 @@ public interface IImageMoveToView {
     void hideDialog();
     void showAnimation();
     void backToMainListActivity(Boolean isMoved);
-    void setImage(Image image);
+    void setImage(Image image, int size);
     void showDecorate();
     void hideDecorate();
 }

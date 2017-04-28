@@ -4,12 +4,14 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,17 +24,20 @@ import com.slidenote.www.slidenotev2.Model.NoteFolder;
 import com.slidenote.www.slidenotev2.NoteRichEditor;
 import com.slidenote.www.slidenotev2.Presenter.NoteListPresenter;
 import com.slidenote.www.slidenotev2.R;
+import com.slidenote.www.slidenotev2.View.Adapter.ItemTouchHelperCallBack;
 import com.slidenote.www.slidenotev2.View.Adapter.NoteContentAdapter;
 import com.slidenote.www.slidenotev2.View.Adapter.NoteDrawerAdapter;
 import com.slidenote.www.slidenotev2.View.Adapter.RecyclerViewListener;
 
 import java.util.List;
 
+import camerademo.OcrActivity;
+
 /**
  * Created by Cieo233 on 3/28/2017.
  */
 
-public class NoteListView extends AppCompatActivity implements INoteListView, RecyclerViewListener.OnNoteClickListener, RecyclerViewListener.OnDrawerClickListener {
+public class NoteListView extends AppCompatActivity implements INoteListView, RecyclerViewListener.OnNoteClickListener, RecyclerViewListener.OnDrawerClickListener, ItemTouchHelperCallBack.OnNoteMergeListener {
 
     private ImageView toolbarMenu;
     private TextView toolbarBtn;
@@ -59,24 +64,29 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
     private NoteDrawerAdapter noteDrawerAdapter;
 
     private Dialog newFolderDialog;
-    private TextView newFolderConfirm, newFolderCancel;
+    private TextView newFolderConfirm, newFolderCancel, newFolderTitle, newFolderHint;
     private EditText newFolderName;
+
+    private FloatingActionButton toPhoto;
 
     private NoteListPresenter presenter;
 
     public static final String ALL = "AllSpecialMark_______________";
+    public static final String CHANGE = "ChangeSpecialMark______________";
+    public static final String UNCHANGE = "UnChangeSpecialMark______________";
 
     public static void startAction(AppCompatActivity activity) {
         Intent intent = new Intent(activity, NoteListView.class);
         activity.startActivity(intent);
     }
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_list);
         presenter = new NoteListPresenter(this);
-        presenter.addSimData();
+//        presenter.addSimData();
         initView();
         initEvent();
     }
@@ -90,6 +100,8 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
         content.setLayoutManager(new GridLayoutManager(this, 2));
         noteContentAdapter = new NoteContentAdapter(this);
         content.setAdapter(noteContentAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallBack(this));
+        itemTouchHelper.attachToRecyclerView(content);
 
         bottomMenu = (RelativeLayout) findViewById(R.id.bottomMenu);
         bottomMenu.setVisibility(View.GONE);
@@ -110,11 +122,14 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
         drawerItem = (RelativeLayout) findViewById(R.id.drawerItem);
         drawerItemText = (TextView) findViewById(R.id.drawerItemText);
         drawerItemBadge = (TextView) findViewById(R.id.drawerItemBadge);
+        drawerItemText.setText("所有笔记");
 
         drawer = (RecyclerView) findViewById(R.id.drawer);
         drawer.setLayoutManager(new LinearLayoutManager(this));
         noteDrawerAdapter = new NoteDrawerAdapter(this);
         drawer.setAdapter(noteDrawerAdapter);
+
+        toPhoto = (FloatingActionButton) findViewById(R.id.toPhoto);
 
         presenter.refreshDrawer();
         presenter.refreshContent();
@@ -170,16 +185,26 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
             }
         });
 
+        toPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(NoteListView.this, OcrActivity.class);
+                NoteListView.this.startActivity(intent);
+            }
+        });
+
     }
 
     @Override
     public void showBottomMenu() {
         bottomMenu.setVisibility(View.VISIBLE);
+        toPhoto.setVisibility(View.GONE);
     }
 
     @Override
     public void hideBottomMenu() {
         bottomMenu.setVisibility(View.GONE);
+        toPhoto.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -192,9 +217,9 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
     public void refreshDrawerItem(List<Note> notes, int highLightPosition) {
         drawerItemBadge.setText(String.valueOf(notes.size()));
         if (highLightPosition == -1) {
-            drawerItem.setBackgroundResource(R.color.mainColor1);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_yellow);
         } else {
-            drawerItem.setBackgroundResource(R.color.mainColor3);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_white);
         }
     }
 
@@ -231,15 +256,16 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
     @Override
     public void toDetailActivity(String folderName, int position) {
         NoteRichEditor.startAction(this,folderName,position);
+        finish();
     }
 
     @Override
     public void setHighLightButton(int position) {
         noteDrawerAdapter.setHighLightPosition(position);
         if (position == -1) {
-            drawerItem.setBackgroundResource(R.color.mainColor1);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_yellow);
         } else {
-            drawerItem.setBackgroundResource(R.color.mainColor3);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_white);
         }
     }
 
@@ -258,6 +284,8 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
         newFolderName = (EditText) newFolderDialog.findViewById(R.id.newFolderName);
         newFolderConfirm = (TextView) newFolderDialog.findViewById(R.id.newFolderConfirm);
         newFolderCancel = (TextView) newFolderDialog.findViewById(R.id.newFolderCancel);
+        newFolderTitle = (TextView) newFolderDialog.findViewById(R.id.newFolderTitle);
+        newFolderHint = (TextView) newFolderDialog.findViewById(R.id.newFolderHint);
         newFolderConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,6 +298,8 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
                 presenter.addNewFolderCancel();
             }
         });
+        newFolderTitle.setText("新建笔记簿");
+        newFolderHint.setText("请输入笔记簿名称");
         newFolderDialog.show();
     }
 
@@ -294,9 +324,13 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
     }
 
     @Override
+    public void mergeNote(int srcPosition, int targetPosition, Note target) {
+        noteContentAdapter.mergeNote(srcPosition,targetPosition,target);
+    }
+
+    @Override
     public void noteClick(Note note, int position) {
         presenter.itemClick(note, position);
-
     }
 
     @Override
@@ -325,5 +359,10 @@ public class NoteListView extends AppCompatActivity implements INoteListView, Re
                     presenter.refreshContent();
                 }
         }
+    }
+
+    @Override
+    public void onNoteMerge(int srcPosition, int targetPosition) {
+        presenter.onMergeNote(srcPosition,targetPosition);
     }
 }

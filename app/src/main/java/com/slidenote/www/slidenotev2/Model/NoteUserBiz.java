@@ -11,9 +11,9 @@ import java.util.List;
 
 public class NoteUserBiz implements INoteUserBiz {
     @Override
-    public void getAllNote(BaseListener.OnGetAllNoteListener OnGetAllNoteListener) {
+    public void getAllNote(BaseListener.OnGetNotesListener onGetNotesListener) {
         List<Note> notes = DataSupport.findAll(Note.class,true);
-        OnGetAllNoteListener.getAllNoteSuccess(notes);
+        onGetNotesListener.getNotesSuccess(notes);
     }
 
     @Override
@@ -23,48 +23,45 @@ public class NoteUserBiz implements INoteUserBiz {
     }
 
     @Override
-    public void updateNote(Note note, BaseListener.OnUpdateNoteListener onUpdateNoteListener) {
+    public void updateNote(Note note, BaseListener.OnEventListener onEventListener) {
         note.save();
-        List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class,true);
-        onUpdateNoteListener.updateNoteSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     @Override
-    public void storeNewNote(Note note, NoteFolder folder, BaseListener.OnStoreNewNoteListener onStoreNewNoteListener) {
+    public void storeNewNote(Note note, String folderName, BaseListener.OnEventListener onEventListener) {
+        NoteFolder folder = DataSupport.where("name=?",folderName).findFirst(NoteFolder.class,true);
         note.setFolder(folder);
         note.save();
-        List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class,true);
-        onStoreNewNoteListener.storeNewNoteSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     @Override
-    public void moveNote(List<Note> notes, NoteFolder folder, BaseListener.OnMoveNoteListener onMoveNoteListener) {
+    public void moveNote(List<Note> notes, String folderName, BaseListener.OnEventListener onEventListener) {
+        NoteFolder folder = DataSupport.where("name=?",folderName).findFirst(NoteFolder.class,true);
         for (Note note : notes){
             note.setFolder(folder);
             note.save();
         }
-        List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class,true);
-        onMoveNoteListener.moveNoteSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     @Override
-    public void deleteNote(List<Note> notes, BaseListener.OnDeleteNoteListener onDeleteNoteListener) {
+    public void deleteNote(List<Note> notes, BaseListener.OnEventListener onEventListener) {
         for (Note note : notes){
             note.delete();
         }
-        List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class,true);
-        onDeleteNoteListener.deleteNoteSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     @Override
-    public void addNewFolder(String name, BaseListener.OnAddNewNoteFolderListener onAddNewNoteFolderListener) {
+    public void addNewFolder(String name, BaseListener.OnEventListener onEventListener) {
         if (DataSupport.isExist(NoteFolder.class,"name=?",name)){
-            onAddNewNoteFolderListener.addNewNoteFolderFail();
+            onEventListener.eventFail();
             return;
         }
         NoteFolder folder = new NoteFolder.Builder(name).build();
         folder.save();
-        List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class,true);
-        onAddNewNoteFolderListener.addNewNoteFolderSuccess(folders);
+        onEventListener.eventSuccess();
     }
 }

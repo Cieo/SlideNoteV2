@@ -53,7 +53,7 @@ public class NoteMoveToAdapter extends RecyclerView.Adapter {
         moveToHolder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onNoteFolderClickListener.folderClick(folder, xy);
+                onNoteFolderClickListener.folderClick(folder.getName(), xy);
             }
         });
     }

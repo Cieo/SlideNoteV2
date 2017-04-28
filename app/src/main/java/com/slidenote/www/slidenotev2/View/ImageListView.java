@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,8 @@ import com.slidenote.www.slidenotev2.View.Adapter.ImageDrawerAdapter;
 import com.slidenote.www.slidenotev2.View.Adapter.RecyclerViewListener;
 
 import java.util.List;
+
+import camerademo.OcrActivity;
 
 /**
  * Created by Cieo233 on 3/28/2017.
@@ -58,8 +61,10 @@ public class ImageListView extends AppCompatActivity implements IImageListView, 
     private ImageDrawerAdapter imageDrawerAdapter;
 
     private Dialog newFolderDialog;
-    private TextView newFolderConfirm, newFolderCancel;
+    private TextView newFolderConfirm, newFolderCancel, newFolderTitle, newFolderHint;
     private EditText newFolderName;
+
+    private FloatingActionButton toPhoto;
 
     private ImageListPresenter presenter;
 
@@ -108,11 +113,14 @@ public class ImageListView extends AppCompatActivity implements IImageListView, 
         drawerItem = (RelativeLayout) findViewById(R.id.drawerItem);
         drawerItemText = (TextView) findViewById(R.id.drawerItemText);
         drawerItemBadge = (TextView) findViewById(R.id.drawerItemBadge);
+        drawerItemText.setText("所有幻灯片");
 
         drawer = (RecyclerView) findViewById(R.id.drawer);
         drawer.setLayoutManager(new LinearLayoutManager(this));
         imageDrawerAdapter = new ImageDrawerAdapter(this);
         drawer.setAdapter(imageDrawerAdapter);
+
+        toPhoto = (FloatingActionButton) findViewById(R.id.toPhoto);
 
         presenter.refreshDrawer();
         presenter.refreshContent();
@@ -167,17 +175,25 @@ public class ImageListView extends AppCompatActivity implements IImageListView, 
                 presenter.folderClick(ALL, -1);
             }
         });
-
+        toPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ImageListView.this, OcrActivity.class);
+                ImageListView.this.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public void showBottomMenu() {
         bottomMenu.setVisibility(View.VISIBLE);
+        toPhoto.setVisibility(View.GONE);
     }
 
     @Override
     public void hideBottomMenu() {
         bottomMenu.setVisibility(View.GONE);
+        toPhoto.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -190,9 +206,9 @@ public class ImageListView extends AppCompatActivity implements IImageListView, 
     public void refreshDrawerItem(List<Image> images, int highLightPosition) {
         drawerItemBadge.setText(String.valueOf(images.size()));
         if (highLightPosition == -1) {
-            drawerItem.setBackgroundResource(R.color.mainColor1);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_yellow);
         } else {
-            drawerItem.setBackgroundResource(R.color.mainColor3);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_white);
         }
     }
 
@@ -235,9 +251,9 @@ public class ImageListView extends AppCompatActivity implements IImageListView, 
     public void setHighLightButton(int position) {
         imageDrawerAdapter.setHighLightPosition(position);
         if (position == -1) {
-            drawerItem.setBackgroundResource(R.color.mainColor1);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_yellow);
         } else {
-            drawerItem.setBackgroundResource(R.color.mainColor3);
+            drawerItem.setBackgroundResource(R.drawable.drawer_item_white);
         }
     }
 
@@ -256,6 +272,8 @@ public class ImageListView extends AppCompatActivity implements IImageListView, 
         newFolderName = (EditText) newFolderDialog.findViewById(R.id.newFolderName);
         newFolderConfirm = (TextView) newFolderDialog.findViewById(R.id.newFolderConfirm);
         newFolderCancel = (TextView) newFolderDialog.findViewById(R.id.newFolderCancel);
+        newFolderTitle = (TextView) newFolderDialog.findViewById(R.id.newFolderTitle);
+        newFolderHint = (TextView) newFolderDialog.findViewById(R.id.newFolderHint);
         newFolderConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,6 +286,8 @@ public class ImageListView extends AppCompatActivity implements IImageListView, 
                 presenter.addNewFolderCancel();
             }
         });
+        newFolderTitle.setText("新建相册");
+        newFolderHint.setText("请输入相册名称");
         newFolderDialog.show();
     }
 

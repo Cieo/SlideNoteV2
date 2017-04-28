@@ -7,11 +7,11 @@ import java.util.List;
  */
 
 public interface IImageUserBiz {
-    void getAllImage(BaseListener.OnGetAllImageListener onGetAllImageListener);
+    void getAllImage(BaseListener.OnGetImagesListener onGetImagesListener);
     void getImageFolders(BaseListener.OnGetImageFoldersListener onGetImageFoldersListener);
-    void storeNewImage(Image image, ImageFolder folder,BaseListener.OnStoreNewImageListener onStoreNewImageListener);
-    void moveImage(List<Image> images, ImageFolder folder, BaseListener.OnMoveImageListener onMoveImageListener);
-    void deleteImage(List<Image> images, BaseListener.OnDeleteImageListener onDeleteImageListener);
-    void addNewImageFolder(String name,BaseListener.OnAddNewImageFolderListener onAddNewImageFolderListener);
-    void scanImage(BaseListener.OnScanImageListener onScanImageListener);
+    void storeNewImage(Image image, String folderName, BaseListener.OnEventListener onEventListener);
+    void moveImage(List<Image> images, String folderName, BaseListener.OnEventListener onEventListener);
+    void deleteImage(List<Image> images, BaseListener.OnEventListener onEventListener);
+    void addNewImageFolder(String name, BaseListener.OnEventListener onEventListener);
+    void scanImage(BaseListener.OnEventListener onEventListener);
 }

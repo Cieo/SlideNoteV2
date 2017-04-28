@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.slidenote.www.slidenotev2.View.ImageListView">
 
     <android.support.v4.widget.DrawerLayout
@@ -21,15 +22,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_above="@+id/bottomMenu"
-                android:layout_below="@+id/toolbar"></android.support.v7.widget.RecyclerView>
+                android:layout_below="@+id/toolbar"
+                android:padding="@dimen/x7">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/toPhoto"
+                android:layout_width="@dimen/x60"
+                android:layout_height="@dimen/x60"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/y30"
+                app:backgroundTint="@color/mainColor1"
+                android:elevation="3dp"
+                android:src="@mipmap/btn_photo_n_xxxhdpi"
+                app:fabSize="normal" />
 
             <include layout="@layout/bottom_menu_main_list" />
         </RelativeLayout>
         <!--Drawer-->
         <LinearLayout
-            android:layout_gravity="start"
-            android:layout_width="@dimen/x100"
+            android:layout_width="@dimen/x240"
             android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/darkGray"
             android:orientation="vertical">
 
             <include layout="@layout/drawer_user_main_list" />
@@ -42,14 +59,23 @@
 
             <include layout="@layout/drawer_add_folder_main_list" />
 
-            <include layout="@layout/item_drawer_main_list" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/x10"
+                android:paddingStart="@dimen/x10">
+
+                <include layout="@layout/item_drawer_main_list" />
+            </LinearLayout>
+
 
             <include layout="@layout/line_divide" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/drawer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:padding="@dimen/x10">
 
             </android.support.v7.widget.RecyclerView>
         </LinearLayout>

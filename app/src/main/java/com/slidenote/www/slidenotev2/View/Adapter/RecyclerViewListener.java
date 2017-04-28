@@ -17,14 +17,14 @@ public interface RecyclerViewListener {
         void imageClick(Image image, int position);
     }
     interface OnImageFolderClickListener {
-        void folderClick(ImageFolder folder, int[] xy);
+        void folderClick(String folderName, int[] xy);
     }
 
     interface OnNoteClickListener {
         void noteClick(Note note, int position);
     }
     interface OnNoteFolderClickListener {
-        void folderClick(NoteFolder folder, int[] xy);
+        void folderClick(String folderName, int[] xy);
     }
 
 }

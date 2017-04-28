@@ -20,7 +20,7 @@ import java.util.List;
  * Created by Cieo233 on 3/29/2017.
  */
 
-public class ImageMoveToPresenter {
+public class ImageMoveToPresenter implements BaseListener.OnGetImagesListener, BaseListener.OnGetImageFoldersListener, BaseListener.OnEventListener {
     private IImageMoveToView iImageMoveToView;
     private List<Integer> selected;
     private String currentFolder;
@@ -31,32 +31,12 @@ public class ImageMoveToPresenter {
 
     public ImageMoveToPresenter(IImageMoveToView iImageMoveToView) {
         this.iImageMoveToView = iImageMoveToView;
-        imageUserBiz.getImageFolders(new BaseListener.OnGetImageFoldersListener() {
-            @Override
-            public void getImageFoldersSuccess(List<ImageFolder> folders) {
-                ImageMoveToPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void getImageFoldersFail() {
-
-            }
-        });
-        imageUserBiz.getAllImage(new BaseListener.OnGetAllImageListener() {
-            @Override
-            public void getAllImageSuccess(List<Image> images) {
-                all = images;
-            }
-
-            @Override
-            public void getAllImageFail() {
-
-            }
-        });
+        imageUserBiz.getImageFolders(this);
+        imageUserBiz.getAllImage(this);
         isMoved = false;
     }
 
-    public void itemClick(ImageFolder folder, int[] xy){
+    public void itemClick(String folderName, int[] xy){
         List<Image> images = new ArrayList<>();
         List<Image> srcImages;
         if (currentFolder.equals(ImageListView.ALL)){
@@ -67,17 +47,7 @@ public class ImageMoveToPresenter {
         for (int i : selected){
             images.add(srcImages.get(i));
         }
-        imageUserBiz.moveImage(images, folder, new BaseListener.OnMoveImageListener() {
-            @Override
-            public void moveImageSuccess(List<ImageFolder> folders) {
-                ImageMoveToPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void moveImageFail() {
-
-            }
-        });
+        imageUserBiz.moveImage(images, folderName, this);
         iImageMoveToView.refreshContent(folders);
         selected.clear();
         isMoved = true;
@@ -90,12 +60,12 @@ public class ImageMoveToPresenter {
         Image image;
         if (currentFolder.equals(ImageListView.ALL)){
             image = all.get(selected.get(0));
-            iImageMoveToView.setImage(image);
+            iImageMoveToView.setImage(image, selected.size());
         }else {
             ImageFolder folder = Util.findImageFolder(folders,currentFolder);
             if (folder != null){
                 image = folder.getImages().get(selected.get(0));
-                iImageMoveToView.setImage(image);
+                iImageMoveToView.setImage(image, selected.size());
             }
         }
     }
@@ -110,22 +80,42 @@ public class ImageMoveToPresenter {
 
     public void addFolderConfirm(){
         String name = iImageMoveToView.getNewFolderName();
-        imageUserBiz.addNewImageFolder(name, new BaseListener.OnAddNewImageFolderListener() {
-            @Override
-            public void addNewImageFolderSuccess(List<ImageFolder> folders) {
-                ImageMoveToPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void addNewImageFolderFail() {
-
-            }
-        });
+        imageUserBiz.addNewImageFolder(name, this);
         iImageMoveToView.refreshContent(folders);
         iImageMoveToView.hideDialog();
     }
 
     public void addFolderCancel(){
         iImageMoveToView.hideDialog();
+    }
+
+    @Override
+    public void getImagesSuccess(List<Image> images) {
+        all = images;
+    }
+
+    @Override
+    public void getImagesFail() {
+
+    }
+
+    @Override
+    public void getImageFoldersSuccess(List<ImageFolder> folders) {
+        ImageMoveToPresenter.this.folders = folders;
+    }
+
+    @Override
+    public void getImageFoldersFail() {
+
+    }
+
+    @Override
+    public void eventSuccess() {
+        imageUserBiz.getImageFolders(this);
+    }
+
+    @Override
+    public void eventFail() {
+
     }
 }

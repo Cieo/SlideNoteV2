@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:background="@color/subColor1"
+    android:layout_width="@dimen/x130"
+    android:layout_height="@dimen/y160"
+    android:elevation="3dp"
+    android:layout_margin="@dimen/x12"
+    android:padding="@dimen/x5">
 
     <NoteItemView.NoteItemVIew
         android:id="@+id/note"
-        android:layout_width="@dimen/x40"
-        android:layout_height="@dimen/y80">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     </NoteItemView.NoteItemVIew>
     <ImageView
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:visibility="gone"
         android:id="@+id/checkSign"
-        android:src="@mipmap/ic_launcher_round"
+        android:src="@mipmap/btn_selected_h_xxxhdpi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-</LinearLayout>
+</RelativeLayout>

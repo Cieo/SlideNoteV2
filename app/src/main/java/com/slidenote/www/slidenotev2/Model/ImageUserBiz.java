@@ -22,9 +22,9 @@ public class ImageUserBiz implements IImageUserBiz {
 
 
     @Override
-    public void getAllImage(BaseListener.OnGetAllImageListener onGetAllImageListener) {
+    public void getAllImage(BaseListener.OnGetImagesListener onGetImagesListener) {
         List<Image> images = DataSupport.findAll(Image.class, true);
-        onGetAllImageListener.getAllImageSuccess(images);
+        onGetImagesListener.getImagesSuccess(images);
     }
 
     @Override
@@ -34,15 +34,16 @@ public class ImageUserBiz implements IImageUserBiz {
     }
 
     @Override
-    public void storeNewImage(Image image, ImageFolder folder, BaseListener.OnStoreNewImageListener onStoreNewImageListener) {
+    public void storeNewImage(Image image, String folderName, BaseListener.OnEventListener onEventListener) {
+        ImageFolder folder = DataSupport.where("name=?",folderName).findFirst(ImageFolder.class,true);
         image.setFolder(folder);
         image.save();
-        List<ImageFolder> folders = DataSupport.findAll(ImageFolder.class,true);
-        onStoreNewImageListener.storeNewImageSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     @Override
-    public void moveImage(List<Image> images, ImageFolder folder, BaseListener.OnMoveImageListener onMoveImageListener) {
+    public void moveImage(List<Image> images, String folderName, BaseListener.OnEventListener onEventListener) {
+        ImageFolder folder = DataSupport.where("name=?",folderName).findFirst(ImageFolder.class, true);
         for (Image image : images){
             File src = new File(image.getPath());
             File dst = new File(folder.getPath()+"/"+image.getName());
@@ -63,8 +64,7 @@ public class ImageUserBiz implements IImageUserBiz {
             image.setFolder(folder);
             image.save();
         }
-        List<ImageFolder> folders = DataSupport.findAll(ImageFolder.class,true);
-        onMoveImageListener.moveImageSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     private void copy(File src, File dst) throws IOException {
@@ -78,40 +78,37 @@ public class ImageUserBiz implements IImageUserBiz {
     }
 
     @Override
-    public void deleteImage(List<Image> images, BaseListener.OnDeleteImageListener onDeleteImageListener) {
+    public void deleteImage(List<Image> images, BaseListener.OnEventListener onEventListener) {
         for (Image image : images) {
             image.delete();
             File file = new File(image.getPath());
             file.delete();
         }
-        List<ImageFolder> folders = DataSupport.findAll(ImageFolder.class,true);
-        onDeleteImageListener.deleteImageSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     @Override
-    public void addNewImageFolder(String name, BaseListener.OnAddNewImageFolderListener onAddNewImageFolderListener) {
+    public void addNewImageFolder(String name, BaseListener.OnEventListener onEventListener) {
         File newFolder = new File(IMAGE_ROOT.getAbsolutePath()+"/"+name);
         if (!newFolder.exists()){
             newFolder.mkdirs();
         } else {
-            onAddNewImageFolderListener.addNewImageFolderFail();
+            onEventListener.eventFail();
             return;
         }
         ImageFolder folder = new ImageFolder.Builder(name,newFolder.getAbsolutePath()).build();
         folder.save();
-        List<ImageFolder> folders = DataSupport.findAll(ImageFolder.class,true);
-        onAddNewImageFolderListener.addNewImageFolderSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
 
     @Override
-    public void scanImage(BaseListener.OnScanImageListener onScanImageListener) {
+    public void scanImage(BaseListener.OnEventListener onEventListener) {
         if (!IMAGE_ROOT.exists()) {
             IMAGE_ROOT.mkdirs();
         }
         scan(IMAGE_ROOT);
-        List<ImageFolder> folders = DataSupport.findAll(ImageFolder.class,true);
-        onScanImageListener.scanImageSuccess(folders);
+        onEventListener.eventSuccess();
     }
 
     private void scan(File imageRoot) {

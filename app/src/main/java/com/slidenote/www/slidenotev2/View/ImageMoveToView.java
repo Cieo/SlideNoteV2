@@ -35,9 +35,12 @@ import java.util.List;
 
 public class ImageMoveToView extends AppCompatActivity implements IImageMoveToView, RecyclerViewListener.OnImageFolderClickListener {
     private ImageView backBtn;
+    private TextView title;
 
     private RelativeLayout imageContainer;
     private ImageView image;
+    private TextView decorate1, decorate2;
+
 
     private LinearLayout addFolder;
     private TextView addFolderText;
@@ -73,10 +76,13 @@ public class ImageMoveToView extends AppCompatActivity implements IImageMoveToVi
 
     void initView(){
         backBtn = (ImageView) findViewById(R.id.backBtn);
+        title = (TextView) findViewById(R.id.title);
 
         imageContainer = (RelativeLayout) findViewById(R.id.imageContainer);
         image = (ImageView) findViewById(R.id.image);
         imageContainer.setVisibility(View.VISIBLE);
+        decorate1 = (TextView) findViewById(R.id.decorate1);
+        decorate2 = (TextView) findViewById(R.id.decorate2);
 
         addFolder = (LinearLayout) findViewById(R.id.addFolder);
         addFolderText = (TextView) findViewById(R.id.addFolderText);
@@ -159,13 +165,15 @@ public class ImageMoveToView extends AppCompatActivity implements IImageMoveToVi
     }
 
     @Override
-    public void setImage(Image image) {
+    public void setImage(Image image, int size) {
+        title.setText(size + "张照片");
         Glide.with(SlideNoteApplication.getContext()).load(image.getPath()).into(ImageMoveToView.this.image);
     }
 
     @Override
     public void showDecorate() {
-
+        decorate1.setVisibility(View.VISIBLE);
+        decorate2.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -174,8 +182,8 @@ public class ImageMoveToView extends AppCompatActivity implements IImageMoveToVi
     }
 
     @Override
-    public void folderClick(ImageFolder folder, int[] xy) {
-        presenter.itemClick(folder,xy);
+    public void folderClick(String folderName, int[] xy) {
+        presenter.itemClick(folderName,xy);
     }
 
     @Override

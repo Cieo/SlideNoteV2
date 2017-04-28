@@ -76,9 +76,9 @@ public class ImageDrawerAdapter extends RecyclerView.Adapter {
         super.onViewAttachedToWindow(holder);
         ImageDrawerHolder drawerHolder = (ImageDrawerHolder) holder;
         if (drawerHolder.getAdapterPosition() == highLightPosition) {
-            drawerHolder.item.setBackgroundResource(R.color.mainColor1);
+            drawerHolder.item.setBackgroundResource(R.drawable.drawer_item_yellow);
         } else {
-            drawerHolder.item.setBackgroundResource(R.color.subColor1);
+            drawerHolder.item.setBackgroundResource(R.drawable.drawer_item_white);
         }
     }
 

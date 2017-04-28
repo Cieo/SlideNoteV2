@@ -18,7 +18,7 @@ public interface INoteMoveToView {
     void hideDialog();
     void showAnimation();
     void backToMainListActivity(Boolean isMoved);
-    void setNote(Note note);
+    void setNote(Note note, int size);
     void showDecorate();
     void hideDecorate();
 }

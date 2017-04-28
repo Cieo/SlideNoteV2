@@ -2,13 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawerSwitch"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/y30"
+    android:layout_height="@dimen/y44"
+    android:gravity="center"
     android:orientation="horizontal">
     <ImageView
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:src="@mipmap/btn_switch_h_xxxhdpi"
+        android:layout_width="@dimen/y24"
+        android:layout_height="@dimen/y24" />
     <TextView
+        android:layout_marginStart="@dimen/x10"
+        android:textColor="@color/subColor1"
+        android:textSize="18sp"
         android:id="@+id/drawerSwitchText"
         android:text="所有"
         android:layout_width="wrap_content"

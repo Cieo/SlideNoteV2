@@ -68,7 +68,7 @@ public class ImageMoveToAdapter extends RecyclerView.Adapter {
         moveToHolder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onImageFolderClickListener.folderClick(folder, xy);
+                onImageFolderClickListener.folderClick(folder.getName(), xy);
             }
         });
     }

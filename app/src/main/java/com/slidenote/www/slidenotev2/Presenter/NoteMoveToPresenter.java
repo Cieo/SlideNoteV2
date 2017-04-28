@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Cieo233 on 3/29/2017.
  */
 
-public class NoteMoveToPresenter {
+public class NoteMoveToPresenter implements BaseListener.OnGetNotesListener, BaseListener.OnGetNoteFoldersListener, BaseListener.OnEventListener {
     private INoteMoveToView iNoteMoveToView;
     private List<Integer> selected;
     private String currentFolder;
@@ -32,32 +32,12 @@ public class NoteMoveToPresenter {
 
     public NoteMoveToPresenter(INoteMoveToView iNoteMoveToView) {
         this.iNoteMoveToView = iNoteMoveToView;
-        noteUserBiz.getNoteFolders(new BaseListener.OnGetNoteFoldersListener() {
-            @Override
-            public void getNoteFoldersSuccess(List<NoteFolder> folders) {
-                NoteMoveToPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void getNoteFoldersFail() {
-
-            }
-        });
-        noteUserBiz.getAllNote(new BaseListener.OnGetAllNoteListener() {
-            @Override
-            public void getAllNoteSuccess(List<Note> notes) {
-                all = notes;
-            }
-
-            @Override
-            public void getAllNoteFail() {
-
-            }
-        });
+        noteUserBiz.getNoteFolders(this);
+        noteUserBiz.getAllNote(this);
         isMoved = false;
     }
 
-    public void itemClick(NoteFolder folder, int[] xy){
+    public void itemClick(String folderName, int[] xy){
         List<Note> notes = new ArrayList<>();
         List<Note> srcNotes;
         if (currentFolder.equals(ImageListView.ALL)){
@@ -68,17 +48,7 @@ public class NoteMoveToPresenter {
         for (int i : selected){
             notes.add(srcNotes.get(i));
         }
-        noteUserBiz.moveNote(notes, folder, new BaseListener.OnMoveNoteListener() {
-            @Override
-            public void moveNoteSuccess(List<NoteFolder> folders) {
-                NoteMoveToPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void moveNoteFail() {
-
-            }
-        });
+        noteUserBiz.moveNote(notes, folderName, this);
         iNoteMoveToView.refreshContent(folders);
         selected.clear();
         isMoved = true;
@@ -91,12 +61,12 @@ public class NoteMoveToPresenter {
         Note note;
         if (currentFolder.equals(ImageListView.ALL)){
             note = all.get(selected.get(0));
-            iNoteMoveToView.setNote(note);
+            iNoteMoveToView.setNote(note, selected.size());
         }else {
             NoteFolder folder = Util.findNoteFolder(folders,currentFolder);
             if (folder != null){
                 note = folder.getNotes().get(selected.get(0));
-                iNoteMoveToView.setNote(note);
+                iNoteMoveToView.setNote(note,selected.size());
             }
         }
     }
@@ -111,22 +81,42 @@ public class NoteMoveToPresenter {
 
     public void addFolderConfirm(){
         String name = iNoteMoveToView.getNewFolderName();
-        noteUserBiz.addNewFolder(name, new BaseListener.OnAddNewNoteFolderListener() {
-            @Override
-            public void addNewNoteFolderSuccess(List<NoteFolder> folders) {
-                NoteMoveToPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void addNewNoteFolderFail() {
-
-            }
-        });
+        noteUserBiz.addNewFolder(name, this);
         iNoteMoveToView.refreshContent(folders);
         iNoteMoveToView.hideDialog();
     }
 
     public void addFolderCancel(){
         iNoteMoveToView.hideDialog();
+    }
+
+    @Override
+    public void getNotesSuccess(List<Note> notes) {
+        all = notes;
+    }
+
+    @Override
+    public void getNotesFail() {
+
+    }
+
+    @Override
+    public void getNoteFoldersSuccess(List<NoteFolder> folders) {
+        NoteMoveToPresenter.this.folders = folders;
+    }
+
+    @Override
+    public void getNoteFoldersFail() {
+
+    }
+
+    @Override
+    public void eventSuccess() {
+        noteUserBiz.getNoteFolders(this);
+    }
+
+    @Override
+    public void eventFail() {
+
     }
 }

@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawerItem"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/y30">
+    android:layout_width="@dimen/x200"
+    android:layout_margin="@dimen/x10"
+    android:layout_height="@dimen/y40">
     <TextView
+        android:textColor="@color/mainColor2"
+        android:textSize="18sp"
         android:id="@+id/drawerItemText"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
+        android:textColor="@color/mainColor3"
+        android:textSize="12sp"
+        android:gravity="center"
         android:id="@+id/drawerItemBadge"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:background="@drawable/drawer_badge_gray"
+        android:layout_width="@dimen/x30"
+        android:layout_height="@dimen/y28" />
 </RelativeLayout>

@@ -7,88 +7,29 @@ import java.util.List;
  */
 
 public class BaseListener {
-    public interface OnGetAllImageListener{
-        void getAllImageSuccess(List<Image> images);
+   public interface OnGetImagesListener {
+       void getImagesSuccess(List<Image> images);
+       void getImagesFail();
+   }
 
-        void getAllImageFail();
-    }
+   public interface OnGetImageFoldersListener {
+       void getImageFoldersSuccess(List<ImageFolder> folders);
+       void getImageFoldersFail();
+   }
 
-    public interface OnGetImageFoldersListener {
-        void getImageFoldersSuccess(List<ImageFolder> folders);
+   public interface OnGetNotesListener {
+       void getNotesSuccess(List<Note> notes);
+       void getNotesFail();
+   }
 
-        void getImageFoldersFail();
-    }
+   public interface OnGetNoteFoldersListener {
+       void getNoteFoldersSuccess(List<NoteFolder> folders);
+       void getNoteFoldersFail();
+   }
 
-    public interface OnStoreNewImageListener {
-        void storeNewImageSuccess(List<ImageFolder> folders);
+   public interface OnEventListener{
+       void eventSuccess();
+       void eventFail();
+   }
 
-        void storeNewImageFail();
-    }
-
-    public interface OnMoveImageListener {
-        void moveImageSuccess(List<ImageFolder> folders);
-
-        void moveImageFail();
-    }
-
-    public interface OnDeleteImageListener {
-        void deleteImageSuccess(List<ImageFolder> folders);
-
-        void deleteImageFail();
-    }
-
-    public interface OnAddNewImageFolderListener {
-        void addNewImageFolderSuccess(List<ImageFolder> folders);
-
-        void addNewImageFolderFail();
-    }
-
-    public interface OnScanImageListener {
-        void scanImageSuccess(List<ImageFolder> folders);
-
-        void scanImageFail();
-    }
-
-
-    public interface OnGetAllNoteListener {
-        void getAllNoteSuccess(List<Note> notes);
-
-        void getAllNoteFail();
-    }
-
-    public interface OnGetNoteFoldersListener {
-        void getNoteFoldersSuccess(List<NoteFolder> folders);
-
-        void getNoteFoldersFail();
-    }
-
-    public interface OnUpdateNoteListener {
-        void updateNoteSuccess(List<NoteFolder> folders);
-
-        void updateNoteFail();
-    }
-
-    public interface OnStoreNewNoteListener {
-        void storeNewNoteSuccess(List<NoteFolder> folders);
-
-        void storeNewNoteFail();
-    }
-
-    public interface OnMoveNoteListener {
-        void moveNoteSuccess(List<NoteFolder> folders);
-
-        void moveNoteFail();
-    }
-
-    public interface OnDeleteNoteListener {
-        void deleteNoteSuccess(List<NoteFolder> folders);
-
-        void deleteNoteFail();
-    }
-
-    public interface OnAddNewNoteFolderListener {
-        void addNewNoteFolderSuccess(List<NoteFolder> folders);
-
-        void addNewNoteFolderFail();
-    }
 }

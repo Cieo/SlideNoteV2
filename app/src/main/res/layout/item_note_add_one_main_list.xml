@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item"
-    android:layout_width="@dimen/x40"
-    android:layout_height="@dimen/y80"
-    android:orientation="vertical">
+    android:background="@color/subColor1"
+    android:padding="@dimen/x5"
+    android:layout_margin="@dimen/x12"
+    android:elevation="3dp"
+    android:layout_width="@dimen/x130"
+    android:layout_height="@dimen/y160">
     <ImageView
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_centerInParent="true"
+        android:src="@mipmap/btn_add_n_xxxhdpi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

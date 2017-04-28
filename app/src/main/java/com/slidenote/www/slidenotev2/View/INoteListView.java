@@ -47,4 +47,6 @@ public interface INoteListView {
     void showHideSingleCheckSign(int position);
 
     void hideAllCheckSign();
+
+    void mergeNote(int srcPosition, int targetPosition, Note target);
 }

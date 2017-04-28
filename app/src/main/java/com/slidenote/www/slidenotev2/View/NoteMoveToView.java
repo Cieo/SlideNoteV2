@@ -14,21 +14,17 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.slidenote.www.slidenotev2.Model.Image;
-import com.slidenote.www.slidenotev2.Model.ImageFolder;
 import com.slidenote.www.slidenotev2.Model.Note;
 import com.slidenote.www.slidenotev2.Model.NoteFolder;
-import com.slidenote.www.slidenotev2.Presenter.ImageMoveToPresenter;
 import com.slidenote.www.slidenotev2.Presenter.NoteMoveToPresenter;
 import com.slidenote.www.slidenotev2.R;
-import com.slidenote.www.slidenotev2.SlideNoteApplication;
-import com.slidenote.www.slidenotev2.View.Adapter.ImageMoveToAdapter;
 import com.slidenote.www.slidenotev2.View.Adapter.NoteMoveToAdapter;
 import com.slidenote.www.slidenotev2.View.Adapter.RecyclerViewListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import NoteItemView.NoteItemVIew;
 
 /**
  * Created by Cieo233 on 3/29/2017.
@@ -36,9 +32,11 @@ import java.util.List;
 
 public class NoteMoveToView extends AppCompatActivity implements INoteMoveToView, RecyclerViewListener.OnNoteFolderClickListener {
     private ImageView backBtn;
+    private TextView title;
 
-    private RelativeLayout imageContainer;
-    private ImageView image;
+    private RelativeLayout noteContainer;
+    private NoteItemVIew note;
+    private TextView decorate1, decorate2;
 
     private LinearLayout addFolder;
     private TextView addFolderText;
@@ -74,14 +72,17 @@ public class NoteMoveToView extends AppCompatActivity implements INoteMoveToView
 
     void initView(){
         backBtn = (ImageView) findViewById(R.id.backBtn);
+        title = (TextView) findViewById(R.id.title);
 
-        imageContainer = (RelativeLayout) findViewById(R.id.imageContainer);
-        image = (ImageView) findViewById(R.id.image);
-        imageContainer.setVisibility(View.VISIBLE);
+        noteContainer = (RelativeLayout) findViewById(R.id.noteContainer);
+        note = (NoteItemVIew) findViewById(R.id.note);
+        noteContainer.setVisibility(View.VISIBLE);
+        decorate1 = (TextView) findViewById(R.id.noteDecorate1);
+        decorate2 = (TextView) findViewById(R.id.noteDecorate2);
 
         addFolder = (LinearLayout) findViewById(R.id.addFolder);
         addFolderText = (TextView) findViewById(R.id.addFolderText);
-        addFolderText.setText("新建相册");
+        addFolderText.setText("新建笔记簿");
 
         content = (RecyclerView) findViewById(R.id.content);
         noteMoveToAdapter = new NoteMoveToAdapter(this);
@@ -160,12 +161,15 @@ public class NoteMoveToView extends AppCompatActivity implements INoteMoveToView
     }
 
     @Override
-    public void setNote(Note note) {
+    public void setNote(Note note, int size) {
+        this.note.setNote(note);
+        title.setText(size+"份笔记");
     }
 
     @Override
     public void showDecorate() {
-
+        decorate1.setVisibility(View.VISIBLE);
+        decorate2.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -174,8 +178,8 @@ public class NoteMoveToView extends AppCompatActivity implements INoteMoveToView
     }
 
     @Override
-    public void folderClick(NoteFolder folder, int[] xy) {
-        presenter.itemClick(folder,xy);
+    public void folderClick(String folderName, int[] xy) {
+        presenter.itemClick(folderName,xy);
     }
 
     @Override

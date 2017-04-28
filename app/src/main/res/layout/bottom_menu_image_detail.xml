@@ -1,30 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/y30"
+    android:layout_height="@dimen/y48"
+    android:background="@color/mainColor1"
+    android:gravity="center_vertical"
     android:orientation="horizontal">
 
     <ImageView
+        android:layout_marginStart="@dimen/x35"
         android:id="@+id/ocr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/x28"
+        android:layout_height="@dimen/x28"
         android:src="@mipmap/ic_launcher_round" />
 
     <ImageView
+        android:layout_marginStart="@dimen/x46"
         android:id="@+id/newNote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/x28"
+        android:layout_height="@dimen/x28"
         android:src="@mipmap/ic_launcher_round" />
 
     <ImageView
+        android:layout_marginStart="@dimen/x46"
         android:id="@+id/edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/x28"
+        android:layout_height="@dimen/x28"
         android:src="@mipmap/ic_launcher_round" />
 
     <ImageView
+        android:layout_marginStart="@dimen/x46"
         android:id="@+id/delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/x28"
+        android:layout_height="@dimen/x28"
         android:src="@mipmap/ic_launcher_round" />
 </LinearLayout>

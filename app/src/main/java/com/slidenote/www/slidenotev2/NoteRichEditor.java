@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,23 +24,27 @@ import android.widget.Toast;
 
 import com.slidenote.www.slidenotev2.Model.Note;
 import com.slidenote.www.slidenotev2.Model.NoteFolder;
+import com.slidenote.www.slidenotev2.Model.TessTwoUtil;
 import com.slidenote.www.slidenotev2.Utils.Util;
 import com.slidenote.www.slidenotev2.View.ImageListView;
+import com.slidenote.www.slidenotev2.View.NoteListView;
 
 import org.litepal.crud.DataSupport;
-
-import DrawableImageView.DrawOperation;
-import DrawableImageView.DrawableImageView;
-import RichEditorPac.RichEditor;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
-public class NoteRichEditor extends AppCompatActivity implements View.OnTouchListener{
+import DrawableImageView.DrawOperation;
+import DrawableImageView.DrawableImageView;
+import RichEditorPac.RichEditor;
+
+public class NoteRichEditor extends AppCompatActivity implements View.OnTouchListener {
     private static final int REQUEST_CODE_PICK_IMAGE = 1023;
     private static final int WIDTH_PAINT = 10;
     private static final int WIDTH_PEN = 5;
@@ -79,45 +85,126 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
     private Note note;
     private NoteFolder folder;
     private boolean isChanged;
+    private List<String> paths;
+    private boolean fromOCR = false;
+    private Handler handler;
+    String content;
 
-    public static void startAction(AppCompatActivity activity,String currentFolder, int position){
-        Intent intent = new Intent(activity,NoteRichEditor.class);
-        intent.putExtra("currentFolder",currentFolder);
-        intent.putExtra("position",position);
-        activity.startActivityForResult(intent,10001);
+    public static void startAction(AppCompatActivity activity, String currentFolder, int position) {
+        Intent intent = new Intent(activity, NoteRichEditor.class);
+        intent.putExtra("currentFolder", currentFolder);
+        intent.putExtra("position", position);
+        if (position == -1) {
+            SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd    hh:mm:ss");
+            String date = sDateFormat.format(new java.util.Date());
+            Note note = new Note.Builder("New Note", date).build();
+            NoteFolder folder;
+            if (!currentFolder.equals(ImageListView.ALL)) {
+                folder = DataSupport.where("name=?", currentFolder).findFirst(NoteFolder.class);
+                if (folder != null) {
+                    note.setFolder(folder);
+                }
+            }
+            note.save();
+            if (currentFolder.equals(ImageListView.ALL)) {
+                List<Note> notes = DataSupport.findAll(Note.class);
+                Log.e("idex","index = "+notes.indexOf(note));
+                int index = 0;
+                for (Note i : notes){
+                    if (i.getId() == note.getId()){
+                        intent.putExtra("position", index);
+                    }
+                    index ++;
+                }
+            } else {
+                folder = DataSupport.where("name=?", currentFolder).findFirst(NoteFolder.class, true);
+                if (folder != null) {
+                    List<Note> notes = folder.getNotes();
+                    int index = 0;
+                    for (Note i : notes){
+                        if (i.getId() == note.getId()){
+                            intent.putExtra("position", index);
+                        }
+                        index ++;
+                    }
+                }
+            }
+        }
+        activity.startActivityForResult(intent, 10001);
     }
 
+    public static void startAction(AppCompatActivity activity, List<String> paths) {
+        Intent intent = new Intent(activity, NoteRichEditor.class);
+        intent.putExtra("currentFolder", ImageListView.ALL);
+        intent.putExtra("position", -1);
+        intent.putStringArrayListExtra("paths", (ArrayList<String>) paths);
+        activity.startActivity(intent);
+    }
 
-    private void onActivityStart(){
-        isChanged = false;
+    private void onActivityStart() {
+        handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                mEditor.setHtml(content);
+                return false;
+            }
+        });
+        isChanged = true;
         Intent intent = getIntent();
         String currentFolder = intent.getStringExtra("currentFolder");
-        int position = intent.getIntExtra("position",-1);
-        if (position == -1){
+        int position = intent.getIntExtra("position", -1);
+        if (position == -1) {
+            fromOCR = true;
+            paths = intent.getStringArrayListExtra("paths");
+            SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd    hh:mm:ss");
+            String date = sDateFormat.format(new java.util.Date());
+            note = new Note.Builder("New Note", date).build();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    content = "";
+                    for (String s : paths) {
+                        Log.e("OCR","OCR in background");
+                        content += TessTwoUtil.ocr(s)+"<br/>";
+                        note.setContent(content);
+                        handler.sendEmptyMessage(0);
+                    }
+                }
+            }).start();
             return;
         }
-        if (currentFolder.equals(ImageListView.ALL)){
-            note = DataSupport.findAll(Note.class,true).get(position);
-        }else {
-            List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class,true);
-            folder = Util.findNoteFolder(folders,currentFolder);
-            if (folder != null){
+        if (currentFolder.equals(ImageListView.ALL)) {
+            note = DataSupport.findAll(Note.class, true).get(position);
+        } else {
+            List<NoteFolder> folders = DataSupport.findAll(NoteFolder.class, true);
+            folder = Util.findNoteFolder(folders, currentFolder);
+            if (folder != null) {
                 note = folder.getNotes().get(position);
             }
         }
     }
 
-    private void onActivityFinish(){
-        note.setTitle("your title");
-        note.setContent("your content");
-        note.setDate("your date");
-        note.setFolder(folder);
+    private void onActivityFinish() {
+        note.setTitle(mEditor.getTitle());
+        note.setContent(mEditor.getHtml());
+        Log.e("aaa", "onActivityFinish: "+mEditor.getHtml() );
         note.save();
-        if (isChanged){
+        isChanged = true;
+        if (isChanged) {
             setResult(RESULT_OK);
-        }else {
+        } else {
             setResult(RESULT_CANCELED);
         }
+        if (fromOCR){
+            NoteListView.startAction(this);
+        }
+        NoteListView.startAction(this);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        onActivityFinish();
     }
 
     /*****************************************************************/
@@ -131,8 +218,8 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
         mDrawableImageView = (DrawableImageView) findViewById(R.id.IdentifyImage);
         ImageShow = (RelativeLayout) findViewById(R.id.showImage);
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        MainEditor_activity = (RelativeLayout)findViewById(R.id.mainEditor);
-        PicViewer_activity = (LinearLayout)findViewById(R.id.PicViewer);
+        MainEditor_activity = (RelativeLayout) findViewById(R.id.mainEditor);
+        PicViewer_activity = (LinearLayout) findViewById(R.id.PicViewer);
         Pic_ImageView = (ImageView) findViewById(R.id.picView);
         Pic_ImageView.setOnTouchListener(this);
 
@@ -143,38 +230,38 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
         ShowPDFActivity();
         changeModel();
 
-        Intent intent = getIntent();
-        mEditor.setDate(intent.getStringExtra("noteDate"));
-        mEditor.setTitle(intent.getStringExtra("noteTitle"));
-        mEditor.setEditorContents(intent.getStringExtra("noteContent"));
+        onActivityStart();
 
 
         findViewById(R.id.ReturnButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ImageShow.getVisibility() == View.VISIBLE){
+                if (ImageShow.getVisibility() == View.VISIBLE) {
                     ImageShow.setVisibility(View.GONE);
-                }
-                else {
+                } else {
                     // 结束掉该页面
-                    NoteRichEditor.this.finish();
+                    NoteRichEditor.this.onActivityFinish();
                 }
             }
         });
+
+        mEditor.setDate(note.getDate());
+        mEditor.setTitle(note.getTitle());
+        mEditor.setHtml(note.getContent());
     }
 
     @Override
     protected void onPause() {
         Intent intent = getIntent();
-        intent.putExtra("noteTitle",mEditor.getTitle());
-        intent.putExtra("noteContent",mEditor.getHtml());
-        intent.putExtra("noteDate",getDateContents());
-        setResult(RESULT_OK,intent);
+        intent.putExtra("noteTitle", mEditor.getTitle());
+        intent.putExtra("noteContent", mEditor.getHtml());
+        intent.putExtra("noteDate", getDateContents());
+        setResult(RESULT_OK, intent);
         super.onPause();
     }
 
     /************************** 此处设置画图、富文本编辑器模式的切换 **************************/
-    private void changeModel(){
+    private void changeModel() {
         findViewById(R.id.EditorButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,7 +284,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
 
     /************************************** 初始化涂鸦界面 ***********************************/
     void initPainter() {
-        mPaintListener  = new View.OnClickListener() {
+        mPaintListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (view.getId()) {
@@ -503,7 +590,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
             fos.flush();
             fos.close();
             url = String.format(url, image.getPath());
-            Toast.makeText(NoteRichEditor.this, "保存成功"+ String.format(url, image.getPath()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(NoteRichEditor.this, "保存成功" + String.format(url, image.getPath()), Toast.LENGTH_SHORT).show();
             mEditor.loadUrl(url);
         } catch (IOException e) {
             e.printStackTrace();
@@ -513,13 +600,13 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
     }
 
     /******************************** 处理【分享为PDF的activity】*****************************/
-    private void ShowPDFActivity(){
+    private void ShowPDFActivity() {
         findViewById(R.id.ShareAsPDF).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 findViewById(R.id.ShareBox).setVisibility(View.GONE);
                 String html = getHTMLContents();
-                System.out.println("开始跳转PDF:"+ html);
+                System.out.println("开始跳转PDF:" + html);
                 Intent intent = new Intent(NoteRichEditor.this, PdfViewer.class);
                 intent.putExtra("HTMLContents", html);
                 startActivity(intent);
@@ -529,7 +616,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
 
     /******************************* 处理【分享为图片的activity】*****************************/
 
-    private void ShowPicActivity(){
+    private void ShowPicActivity() {
         // 跳转至图片预览
         findViewById(R.id.ShareAsPic).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -537,12 +624,12 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
                 findViewById(R.id.ShareBox).setVisibility(View.GONE);
                 mBitmap = convertViewToBitmap(mEditor);
 
-                if (mBitmap != null){
+                if (mBitmap != null) {
                     Pic_ImageView.setImageBitmap(mBitmap);
 //                    Pic_ImageView.setDrawingCacheEnabled(true);
 //                    Canvas canvas = new Canvas(mBitmap);
 //                    Pic_ImageView.draw(canvas);
-                    Log.i("---------------"+mEditor.getResources(),"图片预览成功");
+                    Log.i("---------------" + mEditor.getResources(), "图片预览成功");
                 }
                 MainEditor_activity.setVisibility(View.GONE);
                 PicViewer_activity.setVisibility(View.VISIBLE);
@@ -556,7 +643,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
                 Toast.makeText(NoteRichEditor.this, String.format("图片已成功保存至%s", mPicFileName), Toast.LENGTH_SHORT).show();
             }
         });
-        findViewById(R.id.ShareAsPic_Button).setOnClickListener(new View.OnClickListener(){
+        findViewById(R.id.ShareAsPic_Button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // ShareSDK插入
@@ -590,13 +677,14 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
         Bitmap bitmap = WebViewScreenshot.getWebViewBitmap(Activity_context, view);
         return bitmap;
     }
-    public void saveFile (Bitmap bm, String fileName) throws IOException {
+
+    public void saveFile(Bitmap bm, String fileName) throws IOException {
         File dirFile = new File(ALBUM_PATH);
-        if (!dirFile.exists()){
+        if (!dirFile.exists()) {
             dirFile.mkdir();
         }
-        File myCaptureFile = new File(ALBUM_PATH+fileName);
-        if (!myCaptureFile.exists()){
+        File myCaptureFile = new File(ALBUM_PATH + fileName);
+        if (!myCaptureFile.exists()) {
             myCaptureFile.createNewFile();
         }
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
@@ -604,12 +692,13 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
         bos.flush();
         bos.close();
     }
+
     private Runnable saveFileRunnable = new Runnable() {
         @Override
         public void run() {
-            try{
+            try {
                 saveFile(mBitmap, mPicFileName);
-            }catch (IOException ex){
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
@@ -637,7 +726,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
 
     /********************************   点击图片进行识别跳转   **************************/
     @android.webkit.JavascriptInterface
-    public void actionFromJsWithParam(final String image_url_string){
+    public void actionFromJsWithParam(final String image_url_string) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -647,7 +736,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
                 String uriPrefix = "content://";
                 String path = Uri.decode(image_url_string);
 
-                InputStream is= null;
+                InputStream is = null;
                 Bitmap img = null;
                 if (path.startsWith(uriPrefix)) {
                     mDrawableImageView.setImageURI(Uri.parse(path));
@@ -666,7 +755,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
                 }
                 Log.d("path", path);
                 if (img == null) {
-                    Log.d("open image", "null "+path);
+                    Log.d("open image", "null " + path);
                 }
                 mDrawableImageView.setInEditMode(true);
                 findViewById(R.id.showImage).setVisibility(View.VISIBLE);
@@ -690,7 +779,7 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
     private String EditorContents;
 
     @android.webkit.JavascriptInterface
-    public void setHTMLContents(final String str){
+    public void setHTMLContents(final String str) {
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -701,50 +790,51 @@ public class NoteRichEditor extends AppCompatActivity implements View.OnTouchLis
     }
 
     @android.webkit.JavascriptInterface
-    public void setTitleContents(final String str){
+    public void setTitleContents(final String str) {
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {
         TitleContents = str;
-        System.out.println("网页标题js："+str);
+        System.out.println("网页标题js：" + str);
 //            }
 //        });
     }
 
     @android.webkit.JavascriptInterface
-    public void setDateContents(final String str){
+    public void setDateContents(final String str) {
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {
         DateContents = str;
-        System.out.println("网页时间js："+str);
+        System.out.println("网页时间js：" + str);
 //            }
 //        });
     }
 
     @android.webkit.JavascriptInterface
-    public void setEditorContents(final String str){
+    public void setEditorContents(final String str) {
         EditorContents = str;
     }
 
     /******************** 接口函数 ******************/
-    public String getEditorContents(){
+    public String getEditorContents() {
         mEditor.load("javascript:RE.getEditorContents();");
         return EditorContents;
 
     }
-    public String getHTMLContents(){
+
+    public String getHTMLContents() {
         mEditor.loadUrl("javascript:RE.getHTMLContents();");
         HTMLContents = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\">\n" + HTMLContents;
         return HTMLContents;
     }
 
-    public String getDateContents(){
+    public String getDateContents() {
         mEditor.loadUrl("javascript:RE.getDateContents();");
         return DateContents;
     }
 
-    public String getTitleContents(){
+    public String getTitleContents() {
         mEditor.loadUrl("javascript:RE.getTitleContents();");
         return TitleContents;
     }

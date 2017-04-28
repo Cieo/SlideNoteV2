@@ -2,6 +2,9 @@ package com.slidenote.www.slidenotev2;
 
 import android.app.Application;
 import android.content.Context;
+
+import com.slidenote.www.slidenotev2.Model.TessTwoUtil;
+
 import org.litepal.LitePal;
 
 /**
@@ -16,6 +19,8 @@ public class SlideNoteApplication extends Application {
         super.onCreate();
         LitePal.initialize(this);
         context = getApplicationContext();
+        TessTwoUtil.install(this);
+        TessTwoUtil.setLanguage("chi_sim");
     }
 
     public static Context getContext(){

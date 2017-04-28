@@ -7,18 +7,21 @@ import com.slidenote.www.slidenotev2.Model.ImageUserBiz;
 import com.slidenote.www.slidenotev2.Utils.Util;
 import com.slidenote.www.slidenotev2.View.IImageListView;
 import com.slidenote.www.slidenotev2.View.ImageListView;
-import com.slidenote.www.slidenotev2.View.NoteListView;
-
-import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Cieo233 on 3/29/2017.
  */
 
-public class ImageListPresenter {
+public class ImageListPresenter implements BaseListener.OnEventListener, BaseListener.OnGetImagesListener, BaseListener.OnGetImageFoldersListener {
     private ImageUserBiz imageUserBiz = new ImageUserBiz();
     private IImageListView iImageListView;
     private boolean isSelectMode;
@@ -29,23 +32,13 @@ public class ImageListPresenter {
     private int highLightPosition;
 
     public ImageListPresenter(IImageListView iImageListView) {
-        imageUserBiz.scanImage(new BaseListener.OnScanImageListener() {
-            @Override
-            public void scanImageSuccess(List<ImageFolder> folders) {
-
-            }
-
-            @Override
-            public void scanImageFail() {
-
-            }
-        });
+        imageUserBiz.scanImage(this);
         this.iImageListView = iImageListView;
         isSelectMode = false;
         currentFolder = ImageListView.ALL;
         selected = new ArrayList<>();
-        folders = DataSupport.findAll(ImageFolder.class,true);
-        all = DataSupport.findAll(Image.class,true);
+        imageUserBiz.getImageFolders(this);
+        imageUserBiz.getAllImage(this);
         highLightPosition = -1;
     }
 
@@ -89,39 +82,12 @@ public class ImageListPresenter {
                 }
             }
         }
-        imageUserBiz.deleteImage(images, new BaseListener.OnDeleteImageListener() {
-            @Override
-            public void deleteImageSuccess(List<ImageFolder> folders) {
-            }
 
-            @Override
-            public void deleteImageFail() {
+        imageUserBiz.deleteImage(images, this);
+        imageUserBiz.getAllImage(this);
+        imageUserBiz.getImageFolders(this);
 
-            }
-        });
-        imageUserBiz.getAllImage(new BaseListener.OnGetAllImageListener() {
-            @Override
-            public void getAllImageSuccess(List<Image> images) {
-                ImageListPresenter.this.all = images;
-            }
 
-            @Override
-            public void getAllImageFail() {
-
-            }
-        });
-        imageUserBiz.getImageFolders(new BaseListener.OnGetImageFoldersListener() {
-            @Override
-            public void getImageFoldersSuccess(List<ImageFolder> folders) {
-
-                ImageListPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void getImageFoldersFail() {
-
-            }
-        });
         iImageListView.refreshDrawerList(folders,highLightPosition);
         iImageListView.refreshDrawerItem(all,highLightPosition);
         if (currentFolder.equals(ImageListView.ALL)){
@@ -169,41 +135,9 @@ public class ImageListPresenter {
 
     public void addNewFolderConfirm() {
         String name = iImageListView.getNewFolderName();
-        imageUserBiz.addNewImageFolder(name, new BaseListener.OnAddNewImageFolderListener() {
-
-            @Override
-            public void addNewImageFolderSuccess(List<ImageFolder> folders) {
-
-            }
-
-            @Override
-            public void addNewImageFolderFail() {
-
-            }
-        });
-        imageUserBiz.getAllImage(new BaseListener.OnGetAllImageListener() {
-            @Override
-            public void getAllImageSuccess(List<Image> images) {
-                ImageListPresenter.this.all = images;
-            }
-
-            @Override
-            public void getAllImageFail() {
-
-            }
-        });
-        imageUserBiz.getImageFolders(new BaseListener.OnGetImageFoldersListener() {
-            @Override
-            public void getImageFoldersSuccess(List<ImageFolder> folders) {
-
-                ImageListPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void getImageFoldersFail() {
-
-            }
-        });
+        imageUserBiz.addNewImageFolder(name, this);
+        imageUserBiz.getAllImage(this);
+        imageUserBiz.getImageFolders(this);
         iImageListView.refreshDrawerList(folders,highLightPosition);
         iImageListView.refreshDrawerItem(all,highLightPosition);
         if (currentFolder.equals(ImageListView.ALL)){
@@ -222,57 +156,15 @@ public class ImageListPresenter {
     }
 
     public void refreshDrawer() {
-        imageUserBiz.getAllImage(new BaseListener.OnGetAllImageListener() {
-            @Override
-            public void getAllImageSuccess(List<Image> images) {
-                ImageListPresenter.this.all = images;
-            }
-
-            @Override
-            public void getAllImageFail() {
-
-            }
-        });
-        imageUserBiz.getImageFolders(new BaseListener.OnGetImageFoldersListener() {
-            @Override
-            public void getImageFoldersSuccess(List<ImageFolder> folders) {
-
-                ImageListPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void getImageFoldersFail() {
-
-            }
-        });
+        imageUserBiz.getAllImage(this);
+        imageUserBiz.getImageFolders(this);
         iImageListView.refreshDrawerList(folders,highLightPosition);
         iImageListView.refreshDrawerItem(all,highLightPosition);
     }
 
     public void refreshContent() {
-        imageUserBiz.getAllImage(new BaseListener.OnGetAllImageListener() {
-            @Override
-            public void getAllImageSuccess(List<Image> images) {
-                ImageListPresenter.this.all = images;
-            }
-
-            @Override
-            public void getAllImageFail() {
-
-            }
-        });
-        imageUserBiz.getImageFolders(new BaseListener.OnGetImageFoldersListener() {
-            @Override
-            public void getImageFoldersSuccess(List<ImageFolder> folders) {
-
-                ImageListPresenter.this.folders = folders;
-            }
-
-            @Override
-            public void getImageFoldersFail() {
-
-            }
-        });
+        imageUserBiz.getAllImage(this);
+        imageUserBiz.getImageFolders(this);
         if (currentFolder.equals(ImageListView.ALL)){
             iImageListView.refreshContentList(all);
         }else {
@@ -305,6 +197,36 @@ public class ImageListPresenter {
     }
 
     public void fromMoveToActivity() {
+
+    }
+
+    @Override
+    public void eventSuccess() {
+
+    }
+
+    @Override
+    public void eventFail() {
+
+    }
+
+    @Override
+    public void getImagesSuccess(List<Image> images) {
+        ImageListPresenter.this.all = images;
+    }
+
+    @Override
+    public void getImagesFail() {
+
+    }
+
+    @Override
+    public void getImageFoldersSuccess(List<ImageFolder> folders) {
+        ImageListPresenter.this.folders = folders;
+    }
+
+    @Override
+    public void getImageFoldersFail() {
 
     }
 }

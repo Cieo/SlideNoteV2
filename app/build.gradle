@@ -15,6 +15,9 @@ android {
                 cppFlags "-std=c++11"
             }
         }
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a"
+        }
     }
     buildTypes {
         release {
@@ -27,6 +30,41 @@ android {
             path "CMakeLists.txt"
         }
     }
+
+    sourceSets.main.jni.srcDirs = []
+    //禁止自带的ndk功能
+    sourceSets.main.jniLibs.srcDirs = ['src/main/libs','src/main/jniLibs']
+    //重定向so目录为src/main/libs和src/main/jniLibs，原来为src/main/jniLibs
+
+    task ndkBuild(type: Exec, description: 'Compile JNI source with NDK') {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        def ndkDir = properties.getProperty('ndk.dir')
+
+        if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) {
+            commandLine "$ndkDir/ndk-build.cmd", '-C', file('src/main/jni').absolutePath
+        } else {
+            commandLine "$ndkDir/ndk-build", '-C', file('src/main/jni').absolutePath
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+    task ndkClean(type: Exec, description: 'Clean NDK Binaries') {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        def ndkDir = properties.getProperty('ndk.dir')
+
+        if (org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS)) {
+            commandLine "$ndkDir/ndk-build.cmd",'clean', '-C', file('src/main/jni').absolutePath
+        } else {
+            commandLine "$ndkDir/ndk-build",'clean', '-C', file('src/main/jni').absolutePath
+        }
+    }
+
+    clean.dependsOn 'ndkClean'
 }
 
 dependencies {
@@ -34,6 +72,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'com.google.dagger:dagger:2.10'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile "io.reactivex.rxjava2:rxjava:2.0.8"
+    compile 'com.rmtheis:tess-two:6.3.0'
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:appcompat-v7:25.3.0'

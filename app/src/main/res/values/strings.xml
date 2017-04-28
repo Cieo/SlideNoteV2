@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SlideNoteV2</string>
+    <string name="app_name">SlideNote</string>
     <string name="button_settings">设置</string>
     <string name="button_capture_photo">拍照</string>
     <string name="button_capture_video">录像</string>

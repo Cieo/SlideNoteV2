@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#22262F">
+    <ImageButton
+        android:id="@+id/ocr_btn_back"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:src="@mipmap/btn_close_h_xxxhdpi"/>
+    <Button
+        android:id="@+id/ocr_button_choose_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="图片"
+        android:layout_marginTop="90dp"
+        android:layout_marginLeft="60dp"/>
+    <Button
+        android:id="@+id/ocr_button_choose_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="文字"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="90dp"
+        android:layout_marginRight="60dp"/>
+    <ImageView
+        android:id="@+id/ocr_image"
+        android:layout_centerHorizontal="true"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@mipmap/eg"
+        android:layout_below="@+id/ocr_button_choose_pic"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"/>
+
+    <ImageButton
+        android:id="@+id/ocr_btn_fiximge"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@mipmap/btn_fiix_n_xxhdpi"/>
+</RelativeLayout>

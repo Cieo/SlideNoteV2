@@ -7,11 +7,11 @@ import java.util.List;
  */
 
 public interface INoteUserBiz {
-    void getAllNote(BaseListener.OnGetAllNoteListener OnGetAllNoteListener);
+    void getAllNote(BaseListener.OnGetNotesListener onGetNotesListener);
     void getNoteFolders(BaseListener.OnGetNoteFoldersListener onGetNoteFoldersListener);
-    void updateNote(Note note ,BaseListener.OnUpdateNoteListener onUpdateNoteListener);
-    void storeNewNote(Note note, NoteFolder folder,BaseListener.OnStoreNewNoteListener onStoreNewNoteListener);
-    void moveNote(List<Note> notes, NoteFolder folder, BaseListener.OnMoveNoteListener onMoveNoteListener);
-    void deleteNote(List<Note> notes, BaseListener.OnDeleteNoteListener onDeleteNoteListener);
-    void addNewFolder(String name, BaseListener.OnAddNewNoteFolderListener onAddNewNoteFolderListener);
+    void updateNote(Note note , BaseListener.OnEventListener onEventListener);
+    void storeNewNote(Note note, String folderName , BaseListener.OnEventListener onEventListener);
+    void moveNote(List<Note> notes, String folderName, BaseListener.OnEventListener onEventListener);
+    void deleteNote(List<Note> notes, BaseListener.OnEventListener onEventListener);
+    void addNewFolder(String name, BaseListener.OnEventListener onEventListener);
 }

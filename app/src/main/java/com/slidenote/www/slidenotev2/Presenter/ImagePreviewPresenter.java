@@ -17,7 +17,7 @@ import java.util.List;
  * Created by Cieo233 on 4/2/2017.
  */
 
-public class ImagePreviewPresenter {
+public class ImagePreviewPresenter implements BaseListener.OnGetImagesListener, BaseListener.OnEventListener, BaseListener.OnGetImageFoldersListener {
     private IImagePreviewView iImagePreviewView;
     private ImageUserBiz imageUserBiz;
     private String currentFolder;
@@ -32,28 +32,8 @@ public class ImagePreviewPresenter {
         currentFolder = ImageListView.ALL;
         all = new ArrayList<>();
         folders = new ArrayList<>();
-        imageUserBiz.getAllImage(new BaseListener.OnGetAllImageListener() {
-            @Override
-            public void getAllImageSuccess(List<Image> images) {
-                all.addAll(images);
-            }
-
-            @Override
-            public void getAllImageFail() {
-
-            }
-        });
-        imageUserBiz.getImageFolders(new BaseListener.OnGetImageFoldersListener() {
-            @Override
-            public void getImageFoldersSuccess(List<ImageFolder> folders) {
-                ImagePreviewPresenter.this.folders.addAll(folders);
-            }
-
-            @Override
-            public void getImageFoldersFail() {
-
-            }
-        });
+        imageUserBiz.getAllImage(this);
+        imageUserBiz.getImageFolders(this);
     }
 
     public void onCompleteClick(){
@@ -77,17 +57,7 @@ public class ImagePreviewPresenter {
     public void onDeleteClick(){
         List<Image> images = new ArrayList<>();
         images.add(image);
-        imageUserBiz.deleteImage(images , new BaseListener.OnDeleteImageListener() {
-            @Override
-            public void deleteImageSuccess(List<ImageFolder> folders) {
-
-            }
-
-            @Override
-            public void deleteImageFail() {
-
-            }
-        });
+        imageUserBiz.deleteImage(images , this);
         iImagePreviewView.backToPhotoActivity();
     }
 
@@ -96,5 +66,35 @@ public class ImagePreviewPresenter {
 
     public void onOneMoreClick(){
         iImagePreviewView.backToPhotoActivity();
+    }
+
+    @Override
+    public void getImagesSuccess(List<Image> images) {
+        all.addAll(images);
+    }
+
+    @Override
+    public void getImagesFail() {
+
+    }
+
+    @Override
+    public void eventSuccess() {
+
+    }
+
+    @Override
+    public void eventFail() {
+
+    }
+
+    @Override
+    public void getImageFoldersSuccess(List<ImageFolder> folders) {
+        ImagePreviewPresenter.this.folders.addAll(folders);
+    }
+
+    @Override
+    public void getImageFoldersFail() {
+
     }
 }
